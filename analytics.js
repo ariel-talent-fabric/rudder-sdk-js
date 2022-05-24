@@ -171,10 +171,17 @@ class Analytics {
           `Destination ${index} Enabled? ${destination.enabled} Type: ${destination.destinationDefinition.name} Use Native SDK? true`
         );
         if (destination.enabled) {
-          this.clientIntegrations.push({
-            name: destination.destinationDefinition.name,
-            config: destination.config,
-          });
+          if (destination.destinationDefinition.name === "GOOGLE_OPTIMIZE") {
+            this.clientIntegrations.unshift({
+              name: destination.destinationDefinition.name,
+              config: destination.config,
+            });
+          } else {
+            this.clientIntegrations.push({
+              name: destination.destinationDefinition.name,
+              config: destination.config,
+            });
+          }
         }
       }, this);
 
