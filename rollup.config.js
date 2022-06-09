@@ -10,9 +10,7 @@ import json from "@rollup/plugin-json";
 import gzipPlugin from "rollup-plugin-gzip";
 import brotli from "rollup-plugin-brotli";
 import visualizer from "rollup-plugin-visualizer";
-import filesize from "rollup-plugin-filesize";
 import * as webPackage from "./package.json";
-// eslint-disable-next-line import/no-relative-packages
 import * as npmPackage from "./dist/rudder-sdk-js/package.json";
 
 let distFileName = "";
@@ -22,21 +20,21 @@ switch (process.env.ENV) {
   case "prod":
     switch (process.env.ENC) {
       case "gzip":
-        if (process.env.PROD_DEBUG_INLINE === "true") {
+        if (process.env.PROD_DEBUG_INLINE == "true") {
           distFileName = "dist/rudder-analytics-map.min.gzip.js";
         } else {
           distFileName = "dist/rudder-analytics.min.gzip.js";
         }
         break;
       case "br":
-        if (process.env.PROD_DEBUG_INLINE === "true") {
+        if (process.env.PROD_DEBUG_INLINE == "true") {
           distFileName = "dist/rudder-analytics-map.min.br.js";
         } else {
           distFileName = "dist/rudder-analytics.min.br.js";
         }
         break;
       default:
-        if (process.env.PROD_DEBUG_INLINE === "true") {
+        if (process.env.PROD_DEBUG_INLINE == "true") {
           distFileName = "dist/rudder-analytics-map.min.js";
         } else {
           distFileName = "dist/rudder-analytics.min.js";
@@ -50,7 +48,7 @@ switch (process.env.ENV) {
 }
 
 const outputFiles = [];
-if (process.env.NPM === "true") {
+if (process.env.NPM == "true") {
   outputFiles.push({
     file: "dist/rudder-sdk-js/index.js",
     format: "umd",
@@ -64,7 +62,7 @@ if (process.env.NPM === "true") {
     format: "iife",
     name: "rudderanalytics",
     sourcemap:
-      process.env.PROD_DEBUG_INLINE === "true"
+      process.env.PROD_DEBUG_INLINE == "true"
         ? "inline"
         : !!process.env.PROD_DEBUG,
   });
@@ -72,14 +70,14 @@ if (process.env.NPM === "true") {
 
 export default {
   input: "analytics.js",
-  external: [],
+  external: ["Xmlhttprequest", "universal-analytics"],
   output: outputFiles,
   plugins: [
     sourcemaps(),
     replace({
       preventAssignment: true,
-      "process.browser": process.env.NODE_ENV !== "true",
-      "process.prod": process.env.ENV === "prod",
+      "process.browser": process.env.NODE_ENV != "true",
+      "process.prod": process.env.ENV == "prod",
       "process.package_version": version,
       "process.module_type": moduleType,
     }),
@@ -151,14 +149,6 @@ export default {
     process.env.ENC === "br" && brotli(),
     process.env.visualizer === "true" &&
       process.env.uglify === "true" &&
-      visualizer({
-        filename: "./stats/rudder-analytics.html",
-        title: "Rollup Visualizer - rudder-analytics",
-        sourcemap: true,
-        open: true,
-        gzipSize: true,
-        brotliSize: true,
-      }),
-    filesize(),
+      visualizer({ sourcemap: true }),
   ],
 };
